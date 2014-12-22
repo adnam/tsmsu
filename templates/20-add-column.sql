@@ -1,7 +1,5 @@
 -- ------------------------------------------------------------------------------------
--- Example SQL script to add a new coumn to an existing table.
--- 
--- The column is only created if previously it does not exist.
+-- Example SQL script to idempotently add a new column to an existing table.
 -- ------------------------------------------------------------------------------------
 
 delimiter '//'
