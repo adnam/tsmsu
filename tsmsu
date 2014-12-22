@@ -1,0 +1,88 @@
+#!/bin/bash
+#------------------------------------------------------------------------------------
+# tsmsu - totally simple MySQL schema upgrades
+# 
+# (aka, "totally stupid mysql schema upgrates")
+# 
+# Author: Adam Hayward <adam at happy dot cat>
+# License: MIT
+#
+#------------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------------
+# SCRIPT CONFIGURATION
+#------------------------------------------------------------------------------------
+
+SCRIPT_NAME=`basename $0`
+
+# Global variables here
+MYSQL_HOSTNAME=localhost
+MYSQL_USERNAME=root
+MYSQL_DATABASE=
+MYSQL_PASSWORD=
+MIGRATIONS_DIR=migrations
+
+# Print a usage message
+usage()
+{
+cat << USAGE
+usage: $0 -D database -u user -p password
+
+Apply sequential idempotent upgrade scripts to a mysql database.
+
+REQUIRED OPTIONS:
+    -D name of database to apply upgrade
+    -u mysql username
+    -p mysql password
+OTHER OPTIONS:
+    -m directory containing the migration scripts
+    -h hostname, default localhost
+    -P port TCP/IP port number to use for the mysql connection
+USAGE
+}
+
+# Get the script options
+get_options()
+{
+    while getopts "D:u:p:m:hp" OPTION
+    do
+        if [ $OPTION == "-" ]; then
+            OPTION=$OPTARG
+        fi
+        case $OPTION in
+            D)  MYSQL_DATABASE=${OPTARG};;
+            u)  MYSQL_USERNAME=${OPTARG};;
+            p)  MYSQL_PASSWORD=${OPTARG};;
+            h)  MYSQL_HOSTNAME=${OPTARG};;
+            m)  MIGRATIONS_DIR=${OPTARG};;
+            \?) echo "Error: invalid option" && usage && exit 1;;
+        esac
+    done
+}
+
+main()
+{
+    get_options "$@"
+    if [ "$MYSQL_DATABASE" == "" ]; then
+        echo "Error: please specify a database"
+        usage
+        exit 1
+    fi
+    for SQLFILE in `ls -v1 ${MIGRATIONS_DIR}/*.sql`; do
+        echo "Running migration script '${SQLFILE}'" > /dev/stderr
+        #echo "mysql -u${MYSQL_USERNAME} -p**** -h${MYSQL_HOSTNAME} -D${MYSQL_DATABASE} < ${SQLFILE}" > /dev/stderr
+        mysql -u${MYSQL_USERNAME} -p${MYSQL_PASSWORD} -h${MYSQL_HOSTNAME} -D${MYSQL_DATABASE} < ${SQLFILE}
+        if [ "$?" != "0" ]; then
+            # SQL script failed
+            echo "Script failed to run. Attempting to SHOW WARNINGS:"
+            echo "SHOW WARNINGS;" | mysql -u${MYSQL_USERNAME} -p${MYSQL_PASSWORD} -h${MYSQL_HOSTNAME} -D${MYSQL_DATABASE};
+            echo "Stopping"
+            exit 1
+        fi
+
+    done
+
+}
+
+main "$@"
+
