@@ -43,15 +43,11 @@ To upgrate your database just run this script to apply the changes in order:
 
     $ ./tsmsu -D example_tsmsu -u mysql_user -p mypasswd -m templates
     Running migration script 'templates/10-add-table.sql'
-
     Creating table 'mytable'
     Running migration script 'templates/20-add-column.sql'
-
     Adding column 'column1' to 'mytable'
     Running migration script 'templates/30-alter-column.sql'
-
     Changing `mytable`.`column1` to VARCHAR
-
     Done.
 
 Told you it was stupid.

@@ -71,7 +71,7 @@ main()
     for SQLFILE in `ls -v1 ${MIGRATIONS_DIR}/*.sql`; do
         echo "Running migration script '${SQLFILE}'" > /dev/stderr
         #echo "mysql -u${MYSQL_USERNAME} -p**** -h${MYSQL_HOSTNAME} -D${MYSQL_DATABASE} < ${SQLFILE}" > /dev/stderr
-        mysql -u${MYSQL_USERNAME} -p${MYSQL_PASSWORD} -h${MYSQL_HOSTNAME} -D${MYSQL_DATABASE} < ${SQLFILE}
+        mysql -u${MYSQL_USERNAME} -p${MYSQL_PASSWORD} -h${MYSQL_HOSTNAME} -D${MYSQL_DATABASE} -N < ${SQLFILE}
         if [ "$?" != "0" ]; then
             # SQL script failed
             echo "Script failed to run. Attempting to SHOW WARNINGS:"
