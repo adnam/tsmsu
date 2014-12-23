@@ -44,11 +44,8 @@ USAGE
 # Get the script options
 get_options()
 {
-    while getopts "D:u:p:m:hp" OPTION
+    while getopts "D:u:p:m:h:" OPTION
     do
-        if [ $OPTION == "-" ]; then
-            OPTION=$OPTARG
-        fi
         case $OPTION in
             D)  MYSQL_DATABASE=${OPTARG};;
             u)  MYSQL_USERNAME=${OPTARG};;
