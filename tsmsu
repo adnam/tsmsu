@@ -2,7 +2,7 @@
 #------------------------------------------------------------------------------------
 # tsmsu - totally simple MySQL schema upgrades
 # 
-# (aka, "totally stupid mysql schema upgrates")
+# AKA "totally stupid mysql schema upgrates"
 # 
 # Author: Adam Hayward <adam at happy dot cat>
 # License: MIT
@@ -57,6 +57,11 @@ get_options()
     done
 }
 
+run_sql()
+{
+    mysql -u${MYSQL_USERNAME} -p${MYSQL_PASSWORD} -h${MYSQL_HOSTNAME} -D${MYSQL_DATABASE} -N < $1
+}
+
 main()
 {
     get_options "$@"
@@ -67,8 +72,9 @@ main()
     fi
     for SQLFILE in `ls -v1 ${MIGRATIONS_DIR}/*.sql`; do
         echo "Running migration script '${SQLFILE}'" > /dev/stderr
-        #echo "mysql -u${MYSQL_USERNAME} -p**** -h${MYSQL_HOSTNAME} -D${MYSQL_DATABASE} < ${SQLFILE}" > /dev/stderr
-        mysql -u${MYSQL_USERNAME} -p${MYSQL_PASSWORD} -h${MYSQL_HOSTNAME} -D${MYSQL_DATABASE} -N < ${SQLFILE}
+        run_sql $SQLFILE | while read line; do
+            echo "    $line"
+        done
         if [ "$?" != "0" ]; then
             # SQL script failed
             echo "Script failed to run. Attempting to SHOW WARNINGS:"

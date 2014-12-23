@@ -1,5 +1,5 @@
 -- ------------------------------------------------------------------------------------
--- Example SQL script to alter a column
+-- Example SQL script to idempotently alter a column
 -- ------------------------------------------------------------------------------------
 
 delimiter '//'
@@ -14,7 +14,8 @@ CREATE PROCEDURE alter_column_mytable_column1() BEGIN
         SELECT * FROM information_schema.COLUMNS
         WHERE TABLE_NAME='mytable'
         AND TABLE_SCHEMA = (SELECT DATABASE())
-        AND COLUMN_NAME="column1" AND DATA_TYPE LIKE "VARCHAR"
+        AND COLUMN_NAME="column1"
+        AND DATA_TYPE LIKE "VARCHAR"
         )
     THEN
         -- Info message

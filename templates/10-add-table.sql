@@ -15,7 +15,8 @@ CREATE PROCEDURE add_table_mytable() BEGIN
     -- it does not already exist.
     IF NOT EXISTS(
         SELECT * FROM information_schema.TABLES
-        WHERE TABLE_NAME='mytable' AND TABLE_SCHEMA=(SELECT DATABASE())
+        WHERE TABLE_NAME='mytable'
+        AND TABLE_SCHEMA=(SELECT DATABASE())
         )
     THEN
         
@@ -23,16 +24,11 @@ CREATE PROCEDURE add_table_mytable() BEGIN
         SELECT "Creating table 'mytable'" AS ' ';
 
         -- Normal 'CREATE TABLE' statement goes here
-
         CREATE TABLE `mytable` (
-            
            `id` INTEGER(11) NOT NULL AUTO_INCREMENT,
            `created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
             PRIMARY KEY (`id`),
-            
             KEY `idx_mytable_created` (`created`)
-
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
     END IF;
